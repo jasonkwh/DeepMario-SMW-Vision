@@ -5,7 +5,7 @@ from encoders.encoder import EncoderType
 SEED = 40
 TORCH_NUM_THREADS = 2
 GAME_NAME = "SuperMarioWorld-Snes-v0"
-STATE_NAME = "YoshiIsland1"
+STATE_NAME = "YoshiIsland2"
 
 _ENCODER_NAME = os.environ.get("ENCODER", EncoderType.CNN.value)
 try:
@@ -55,8 +55,8 @@ BATCH_SIZE = 64
 ENT_COEF = 0.01  # Entropy coefficient for the loss calculation
 TARGET_KL = 0.02  # Early-stops epoch updates if policy moves too fast
 N_EPOCHS = 10  # Optimization epochs per rollout
-GAMMA = 0.997  # Discount factor for the reward calculation
-GAE_LAMBDA = 0.98  # Lambda for the Generalized Advantage Estimation
+GAMMA = 0.99  # Discount factor for the reward calculation
+GAE_LAMBDA = 0.95  # Lambda for the Generalized Advantage Estimation
 CLIP_REWARD = 10.0  # Limit normalized reward magnitude
 CLIP_RANGE = 0.2  # PPO surrogate clip range
 VF_COEF = 0.5  # Value function loss coefficient
