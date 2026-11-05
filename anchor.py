@@ -52,4 +52,8 @@ ANCHORS: dict[str, RAMAnchor] = {
         "address": 8262800,
         "type": "<u1",
     },
+    "on_yoshi": {
+        "address": 8263802,
+        "type": "<u1",
+    },
 }

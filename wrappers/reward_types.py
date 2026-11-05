@@ -12,6 +12,7 @@ class RewardState:
     timer: int
     powerup: int
     star_timer: int
+    on_yoshi: int
 
     @classmethod
     def from_info(cls, info: dict) -> "RewardState":
@@ -25,6 +26,7 @@ class RewardState:
             timer=cls._get_current_time(info),
             powerup=info.get("powerup", 0),
             star_timer=info.get("star_timer", 0),
+            on_yoshi=info.get("on_yoshi", 0),
         )
 
     @staticmethod
@@ -60,3 +62,12 @@ class RewardState:
 
     def gains_star(self, current: "RewardState") -> bool:
         return current.star_timer > 0 and self.star_timer == 0
+
+    def is_riding_yoshi(self, current: "RewardState") -> bool:
+        return current.on_yoshi > 0
+
+    def gains_yoshi(self, current: "RewardState") -> bool:
+        return current.on_yoshi > 0 and self.on_yoshi == 0
+
+    def loses_yoshi(self, current: "RewardState") -> bool:
+        return current.on_yoshi == 0 and self.on_yoshi > 0

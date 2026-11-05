@@ -174,6 +174,7 @@ class TimerPenaltyRule(RewardRule):
 
 class ProgressRule(RewardRule):
     PROGRESS_REWARD = 0.1
+    YOSHI_MOUNTED_PROGRESS_REWARD = 0.02
 
     def __init__(
         self,
@@ -181,11 +182,17 @@ class ProgressRule(RewardRule):
     ):
         self.estimator = estimator
         self.max_progress = 0.0
+        self.max_yoshi_progress = 0.0
         self._metrics: dict[str, float] = {}
 
     def reset(self, prev_state: RewardState | None = None) -> None:
         self.max_progress = self.estimator.estimate(prev_state)
-        self._metrics = {"max_progress": float(self.max_progress)}
+        riding = prev_state is not None and prev_state.on_yoshi > 0
+        self.max_yoshi_progress = self.max_progress if riding else 0.0
+        self._metrics = {
+            "max_progress": float(self.max_progress),
+            "max_yoshi_progress": float(self.max_yoshi_progress),
+        }
 
     def apply(
         self,
@@ -194,13 +201,23 @@ class ProgressRule(RewardRule):
     ) -> tuple[float, bool]:
         cur_progress = self.estimator.estimate(cur_state)
         progress_delta = max(0.0, cur_progress - self.max_progress)
+        riding = prev_state.is_riding_yoshi(cur_state)
 
         reward_delta = 0.0
+        if riding:
+            self.max_yoshi_progress = max(self.max_yoshi_progress, cur_progress)
+
         if progress_delta > 0.0:
             self.max_progress = cur_progress
             reward_delta = self.PROGRESS_REWARD * progress_delta
 
-        self._metrics = {"max_progress": float(self.max_progress)}
+            if riding:
+                reward_delta += self.YOSHI_MOUNTED_PROGRESS_REWARD * progress_delta
+
+        self._metrics = {
+            "max_progress": float(self.max_progress),
+            "max_yoshi_progress": float(self.max_yoshi_progress),
+        }
 
         return reward_delta, False
 
